@@ -5,9 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brawl</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 </head>
 <body>
-    
+    <main>
+        <h1>Brawl!</h1>
+        <hr>
+        <h2 id="playerHpHeading">Player HP: <span id="playerHp">100</span> </h2>
+        <h2 id="enemyHpHeading">Enemy HP: <span id="enemyHp">100</span></h2>
+        <h3>Player Roll: <span id="playerRoll"></span></h3>
+        <h3>Enemy Roll: <span id="enemyRoll"></span></h3>
+        <button id="nextRoundBtn">Next Round</button>
+        <button id="playAgainBtn">Play again</button>
+        <hr>
+        <h3>Combat log</h3>
+        <ul id="combatLog" reversed></ul>
+    </main>
+
     <script src="main.js"></script>
 </body>
 </html>
