@@ -1,12 +1,47 @@
+:root {
+    --textWhite: rgb(226, 226, 226);
+    --green: #72ff72;
+    --yellow: #ffff1a;
+    --red: #ff1a1a;
+}
+
 body, main {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     padding: 0;
     margin: 0;
+    background-color: rgb(23, 23, 23);
+    color: var(--textWhite);
 }
 
 main {
     width: 40%;
     margin-inline: auto;
+}
+
+button {
+    border: 3px solid transparent;
+    font-size: 1rem;
+    font-family: inherit;
+    border-radius: 3px;
+    background-color: rgb(61, 61, 61);
+    color: var(--textWhite);
+    padding: 5px;
+    display: flex;
+    align-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 60%;
+}
+
+button:hover {
+    border-color: var(--green);
+}
+
+button:active {
+    border-color: var(--textWhite)
 }
 
 #playAgainBtn {
@@ -15,13 +50,41 @@ main {
 
 #combatLog {
     line-height: 2rem;
-    transform: rotate(180deg);
+    display: flex;
     list-style: none;
     font-family: "Google Sans Code", monospace;
     text-indent: 2rem;
     font-size: small;
+    flex-direction: column-reverse;
 
-    li {
-        transform: rotate(-180deg);
+    .playerDamaged {
+        color: var(--red)
     }
+
+    .enemyDamaged {
+        color: var(--green)
+    }
+
+    .tie {
+        color: var(--yellow)
+    }
+}
+
+.combatLog {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 1rem;
+    align-content: center;
+}
+
+.hpLow {
+    color: var(--yellow);
+}
+
+#pickedClass {
+    display: none;
 }
