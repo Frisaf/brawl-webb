@@ -12,10 +12,37 @@ function disable_button(button) {
 
 // Utility functions end
 
+const adjectives = ["asleep", "wasteful", "jolly", "fuzzy", "secret", "shy", "psychotic", "uninterested", "animated", "whole", "unkempt", "boring", "thick", "strange", "careful", "suitable", "beautiful", "faulty", "feeble", "fixed", "billowy", "adhesive", "slim", "obnoxious", "wiry", "dull", "quick", "draconian", "lean", "glossy", "sexy"]
+
+class Enemy {
+    constructor(name, hp, type, game_class, money) {
+        this.name = name;
+        this.hp = hp;
+        this.type = type;
+        this.game_class = game_class;
+        this.money = money;
+    };
+
+    attack(damage) {
+        const attack_messages = [
+            `${this.name} farts, and the smell makes you take ${damage} damage.`,
+            `${this.name} punches you really hard, dealing ${damage} damage.`,
+            `${this.name} spits you in the face. You are disgusted and take ${damage} damage.`,
+            `You get flashed by ${this.name}. The trauma deals ${damage} damage.`,
+            `${this.name} makes you relive childhood trauma, dealing ${damage} damage.`,
+            `${this.name} bore the shit out of you. You take ${damage} damage.`
+        ];
+
+        return random_choice(attack_messages)
+    };
+};
+
 const player_name = "Dumb";
 const next_round_btn = document.querySelector("#nextRoundBtn");
+const stop_btn = document.querySelector("#stopBtn");
 const player_hp_element = document.querySelector("#playerHp");
 const enemy_hp_element = document.querySelector("#enemyHp");
+const enemy_name_element = document.querySelector("#enemyName");
 const play_again_btn = document.querySelector("#playAgainBtn");
 const combat_log_element = document.querySelector("#combatLog");
 const player_roll_element = document.querySelector("#playerRoll");
@@ -27,12 +54,6 @@ const thief_button = document.querySelector("#thiefBtn");
 const healer_button = document.querySelector("#healerBtn");
 
 const game_classes = ["Warrior", "Thief", "Healer"];
-const enemy = {
-    "name": "Glub",
-    "hp": 100,
-    "type": "Evil Panda",
-    "class": random_choice(game_classes)
-};
 
 const colour_green = "#72ff72";
 const colour_red = "#ff1a1a";
@@ -40,7 +61,21 @@ const colour_yellow = "#ffff1a";
 
 let player_hp = 100;
 let player_class = "";
-let enemy_class = "";
+let round
+
+function spawn_enemy() {
+    const enemy_names = ["Glub", "Oswald", "Garet", "Howard", "Birgitta", "Ulrika", "Tiffany"];
+    const enemy_types = ["Evil Panda", "Dragon", "Chimpanzee", "Snake", "Zombie", "Skeleton"];
+    const name = random_choice(enemy_names);
+    const hp = Math.floor(Math.random() * 50 + 30);
+    const type = random_choice(enemy_types);
+    const enemy_class = random_choice(game_classes);
+    const money = Math.floor(Math.random() * 10 + (hp / 10));
+
+    return new Enemy(name, hp, type, enemy_class, money)
+}
+
+let enemy = spawn_enemy()
 
 function roll_dice(dice_type) {
     return Math.ceil(Math.random() * dice_type);
@@ -53,6 +88,8 @@ function combatlog(message, type) {
     entry.appendChild(document.createTextNode(message))
     combat_log_element.appendChild(entry)
 }
+
+combatlog(`Prepare to fight the ${random_choice(adjectives)} ${enemy.type.toLowerCase()} ${enemy.name}!`, "neutral")
 
 function game_round() {
     const player_roll = roll_dice(20);
@@ -81,20 +118,12 @@ function game_round() {
 
     else if (player_roll < enemy_roll) {
         const damage = enemy_roll - player_roll;
-        const enemy_attack_messages = [
-            `${enemy.name} farts, and the smell makes you take ${damage} damage.`,
-            `${enemy.name} punches you really hard, dealing ${damage} damage.`,
-            `${enemy.name} spits you in the face. You are disgusted and take ${damage} damage.`,
-            `You get flashed by ${enemy.name}. The trauma deals ${damage} damage.`,
-            `${enemy.name} makes you relive childhood trauma, dealing ${damage} damage.`,
-            `${enemy.name} bore the shit out of you. You take ${damage} damage.`
-        ];
 
         player_hp -= damage;
         player_roll_element.style.color = colour_red;
         enemy_roll_element.style.color = colour_green;
 
-        combatlog(random_choice(enemy_attack_messages), "playerDamaged");
+        combatlog(enemy.attack(damage), "playerDamaged");
     }
 
     else {
@@ -117,7 +146,7 @@ function game_round() {
         }
 
         else if (player_hp < 1) {
-            combatlog("Enemy won!", "playerDamaged");
+            combatlog(`${enemy.name} won!`, "playerDamaged");
             enemy_hp_heading.style.color = colour_green;
             player_hp_heading.style.color = colour_red;
 
@@ -126,7 +155,6 @@ function game_round() {
 
         next_round_btn.setAttribute("disabled", "disabled");
         play_again_btn.style.display = "unset";
-        console.log("round over")
     }
 
     else if (player_hp <= 30) {
@@ -146,17 +174,33 @@ function game_round() {
 }
 
 function play_again() {
-    player_hp = 100;
-    enemy.hp = 100;
+    combat_log_element.innerHTML = ""
+
+    if (player_hp > 0) {
+        hp_bonus = Math.floor(Math.random() * 20);
+        player_hp += hp_bonus;
+    }
+    
+    else {
+        player_hp = 100;
+    }
+
+    enemy = spawn_enemy()
     play_again_btn.style.display = "none";
     player_roll_element.textContent = "";
     enemy_roll_element.textContent = "";
-    combat_log_element.innerHTML = ""
+
+    combatlog(`You take a short rest. Refreshing! It heals you for ${hp_bonus} HP.`, "neutral")
+    combatlog(`Prepare to fight the ${random_choice(adjectives)} ${enemy.type} ${enemy.name}!`, "neutral")
+
     player_hp_element.textContent = player_hp;
     enemy_hp_element.textContent = enemy.hp;
     player_hp_heading.style.color = "unset";
     enemy_hp_heading.style.color = "unset";
+
     player_hp_element.classList.remove("hpLow");
+
+    enemy_name_element.textContent = enemy.name;
 
     next_round_btn.removeAttribute("disabled");
 };
@@ -184,7 +228,39 @@ function pick_class() {
     picked_class.style.display = "unset";
 }
 
-next_round_btn.addEventListener("click", game_round);
+let last = 0
+
+function game_loop(timestamp) {
+    enemy_name_element.textContent = enemy.name
+    if (timestamp >= last + 1000) {
+        game_round();
+
+        stop_btn.removeAttribute("disabled");
+        next_round_btn.setAttribute("disabled", "disabled");
+
+        last = timestamp;
+    }
+
+    if (enemy.hp < 1 || player_hp < 1) {
+        stop()
+    }
+
+    else {
+        round = window.requestAnimationFrame(game_loop);
+    }
+}
+
+function stop() {
+    window.cancelAnimationFrame(round);
+    stop_btn.setAttribute("disabled", "disabled")
+
+    if (player_hp > 0 && enemy.hp > 0) {
+        next_round_btn.removeAttribute("disabled")
+    }
+};
+
+next_round_btn.addEventListener("click", game_loop);
+stop_btn.addEventListener("click", stop);
 play_again_btn.addEventListener("click", play_again);
 warrior_button.addEventListener("click", pick_class);
 thief_button.addEventListener("click", pick_class);

@@ -68,6 +68,10 @@ button:active {
     .tie {
         color: var(--yellow)
     }
+
+    .neutral {
+        color: var(--textWhite)
+    }
 }
 
 .combatLog {
