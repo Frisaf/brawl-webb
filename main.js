@@ -7,7 +7,11 @@ function random_choice(array) {
 };
 
 function disable_button(button) {
-    button.setAttribute("disabled", "disabled")
+    button.setAttribute("disabled", "disabled");
+}
+
+function enable_button(button) {
+    button.removeAttribute("disabled");
 }
 
 // Utility functions end
@@ -52,6 +56,7 @@ const enemy_hp_heading = document.querySelector("#enemyHpHeading");
 const warrior_button = document.querySelector("#warriorBtn");
 const thief_button = document.querySelector("#thiefBtn");
 const healer_button = document.querySelector("#healerBtn");
+const action_button = document.querySelector("#actionBtn");
 
 const game_classes = ["Warrior", "Thief", "Healer"];
 
@@ -61,7 +66,12 @@ const colour_yellow = "#ffff1a";
 
 let player_hp = 100;
 let player_class = "";
-let round
+let money = 0;
+let round;
+let player_action = false;
+let enemy_action = false;
+
+disable_button(next_round_btn);
 
 function spawn_enemy() {
     const enemy_names = ["Glub", "Oswald", "Garet", "Howard", "Birgitta", "Ulrika", "Tiffany"];
@@ -99,6 +109,14 @@ function game_round() {
 
     player_roll_element.textContent = player_roll;
     enemy_roll_element.textContent = enemy_roll;
+
+    if (player_action === false) {
+        enable_button(action_button);
+    }
+
+    else {
+        disable_button(action_button);
+    }
 
     if (player_roll > enemy_roll) {
         const damage = player_roll - enemy_roll;
@@ -155,7 +173,7 @@ function game_round() {
             winner = "Enemy"
         };
 
-        next_round_btn.setAttribute("disabled", "disabled");
+        disable_button(next_round_btn);
         play_again_btn.style.display = "unset";
     }
 
@@ -205,24 +223,34 @@ function play_again() {
     enemy_name_element.textContent = enemy.name;
 
     next_round_btn.removeAttribute("disabled");
+
+    player_action = false
 };
 
 function pick_class() {
     if (this.id == "warriorBtn") {
         player_class = "Warrior";
+        action_button.addEventListener("click", warrior_attack);
+        action_button.textContent = "Extra Attack";
     }
 
     else if (this.id == "thiefBtn") {
         player_class = "Thief";
+        action_button.addEventListener("click", thief_theft);
+        action_button.textContent = "Steal";
     }
 
     else if (this.id == "healerBtn") {
         player_class = "Healer";
+        action_button.addEventListener("click", healer_heal);
+        action_button.textContent = "Heal";
     }
 
     disable_button(warrior_button);
     disable_button(thief_button);
     disable_button(healer_button);
+
+    enable_button(next_round_btn);
 
     const picked_class = document.querySelector("#pickedClass");
 
@@ -254,12 +282,43 @@ function game_loop(timestamp) {
 
 function stop() {
     window.cancelAnimationFrame(round);
-    stop_btn.setAttribute("disabled", "disabled")
+    disable_button(stop_btn);
+    disable_button(action_button);
 
     if (player_hp > 0 && enemy.hp > 0) {
-        next_round_btn.removeAttribute("disabled")
+        enable_button(next_round_btn);
     }
 };
+
+function warrior_attack() {
+    let damage = Math.floor(Math.random() * 15);
+
+    enemy.hp -= damage;
+    player_action = true
+    enemy_hp_element.textContent = enemy.hp;
+
+    combatlog(`You deal an additional ${damage} damage to ${enemy.name}.`, "enemyDamaged");
+};
+
+function thief_theft() {
+    let stolen_money = Math.floor(Math.random() * 10);
+
+    enemy.money -= stolen_money;
+    money += stolen_money;
+    player_action = true;
+
+    combatlog(`You pickpocket ${enemy.name} and find ${stolen_money} coins.`, "enemyDamaged");
+}
+
+function healer_heal() {
+    let to_heal = Math.floor(Math.random() * 15)
+
+    player_hp += to_heal
+    player_action = true
+    player_hp_element.textContent = player_hp;
+
+    combatlog(`You channel a divine spell and heal your wounds! +${to_heal} HP!`, "enemyDamaged")
+}
 
 next_round_btn.addEventListener("click", game_loop);
 stop_btn.addEventListener("click", stop);
