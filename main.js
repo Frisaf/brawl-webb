@@ -77,6 +77,7 @@ let enemy_action = false;
 disable_button(next_round_btn);
 disable_button(change_class_btn);
 disable_button(stop_btn);
+disable_button(action_button);
 
 function spawn_enemy() {
     const enemy_names = ["Glub", "Oswald", "Garet", "Howard", "Birgitta", "Ulrika", "Tiffany"];
@@ -107,6 +108,37 @@ function combatlog(message, type) {
 }
 
 combatlog(`Prepare to fight the ${random_choice(adjectives)} ${enemy.type.toLowerCase()} ${enemy.name}!`, "neutral")
+
+function enemy_class_action() {
+    const action_int = Math.floor(Math.random() * 5 + 1);
+
+    if (enemy.game_class === "Warrior") {
+        player_hp -= action_int;
+        player_hp_element.textContent = player_hp;
+
+        combatlog(`${enemy.name} deals an additional ${action_int} damage to you.`, "playerDamaged");
+    }
+
+    else if (enemy.game_class === "Thief" && money > 1) {
+        if (action_int > money) {
+            action_int = money;
+        };
+        
+        money -= action_int;
+        coin_counter.textContent = money;
+
+        combatlog(`${enemy.name} stole ${action_int} from you!`, "playerDamaged");
+    }
+
+    else if (enemy.game_class === "Healer") {
+        enemy.hp += action_int;
+        enemy_hp_element.textContent = enemy.hp;
+
+        combatlog(`${enemy.name} healed themselves for ${action_int} HP.`, "playerDamaged");
+    }
+
+    enemy_action = true
+}
 
 function game_round() {
     const player_roll = roll_dice(20);
@@ -157,6 +189,10 @@ function game_round() {
 
         combatlog("The rolls were equal. No one was damaged... (suspense!)", "tie");
     };
+
+    if (enemy_action === false && roll_dice(2) == 1) {
+        enemy_class_action()
+    }
 
     const crown = " 👑";
     let winner = ""
@@ -239,7 +275,8 @@ function play_again() {
 
     next_round_btn.removeAttribute("disabled");
 
-    player_action = false
+    player_action = false;
+    enemy_action = false;
 };
 
 function pick_class() {
@@ -310,7 +347,7 @@ function stop() {
 };
 
 function warrior_attack() {
-    let damage = Math.floor(Math.random() * 15 + 1);
+    const damage = Math.floor(Math.random() * 15 + 1);
 
     enemy.hp -= damage;
     player_action = true
