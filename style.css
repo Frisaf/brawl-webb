@@ -75,7 +75,7 @@ button:active {
 }
 
 .combatLog {
-    max-height: 400px;
+    max-height: 150px;
     overflow-y: scroll;
 }
 
