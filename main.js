@@ -77,6 +77,8 @@ function spawn_enemy() {
 
 let enemy = spawn_enemy()
 
+enemy_hp_element.textContent = enemy.hp
+
 function roll_dice(dice_type) {
     return Math.ceil(Math.random() * dice_type);
 };
@@ -179,6 +181,7 @@ function play_again() {
     if (player_hp > 0) {
         hp_bonus = Math.floor(Math.random() * 20);
         player_hp += hp_bonus;
+        combatlog(`You take a short rest. Refreshing! It heals you for ${hp_bonus} HP.`, "neutral")
     }
     
     else {
@@ -190,7 +193,6 @@ function play_again() {
     player_roll_element.textContent = "";
     enemy_roll_element.textContent = "";
 
-    combatlog(`You take a short rest. Refreshing! It heals you for ${hp_bonus} HP.`, "neutral")
     combatlog(`Prepare to fight the ${random_choice(adjectives)} ${enemy.type} ${enemy.name}!`, "neutral")
 
     player_hp_element.textContent = player_hp;
