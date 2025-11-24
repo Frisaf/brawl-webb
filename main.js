@@ -57,6 +57,9 @@ const warrior_button = document.querySelector("#warriorBtn");
 const thief_button = document.querySelector("#thiefBtn");
 const healer_button = document.querySelector("#healerBtn");
 const action_button = document.querySelector("#actionBtn");
+const coin_counter = document.querySelector("#coinCounter");
+const change_class_btn = document.querySelector("#changeClass");
+const picked_class = document.querySelector("#pickedClass");
 
 const game_classes = ["Warrior", "Thief", "Healer"];
 
@@ -72,6 +75,8 @@ let player_action = false;
 let enemy_action = false;
 
 disable_button(next_round_btn);
+disable_button(change_class_btn);
+disable_button(stop_btn);
 
 function spawn_enemy() {
     const enemy_names = ["Glub", "Oswald", "Garet", "Howard", "Birgitta", "Ulrika", "Tiffany"];
@@ -162,7 +167,17 @@ function game_round() {
             combatlog("Player won!", "enemyDamaged");
             player_hp_heading.style.color = colour_green;
             enemy_hp_heading.style.color = colour_red;
-            winner = "Player"
+            winner = "Player";
+
+            if (enemy.money != 0) {
+                combatlog(`${enemy.name} dropped ${enemy.money} coins!`, "neutral");
+                money += enemy.money;
+                coin_counter.textContent = money;
+            }
+
+            else {
+                combatlog(`${enemy.name} didn't have any money!`, "neutral")
+            }
         }
 
         else if (player_hp < 1) {
@@ -252,9 +267,9 @@ function pick_class() {
 
     enable_button(next_round_btn);
 
-    const picked_class = document.querySelector("#pickedClass");
+    change_class_btn.style.display = "unset"
 
-    picked_class.textContent = picked_class.textContent + player_class
+    picked_class.textContent = `You picked ${player_class}`
     picked_class.style.display = "unset";
 }
 
@@ -269,16 +284,20 @@ function game_loop(timestamp) {
         next_round_btn.setAttribute("disabled", "disabled");
 
         last = timestamp;
-    }
+    };
 
     if (enemy.hp < 1 || player_hp < 1) {
-        stop()
+        stop();
+
+        if (money >= 100) {
+            enable_button(change_class_btn);
+        };
     }
 
     else {
         round = window.requestAnimationFrame(game_loop);
-    }
-}
+    };
+};
 
 function stop() {
     window.cancelAnimationFrame(round);
@@ -291,7 +310,7 @@ function stop() {
 };
 
 function warrior_attack() {
-    let damage = Math.floor(Math.random() * 15);
+    let damage = Math.floor(Math.random() * 15 + 1);
 
     enemy.hp -= damage;
     player_action = true
@@ -301,24 +320,54 @@ function warrior_attack() {
 };
 
 function thief_theft() {
-    let stolen_money = Math.floor(Math.random() * 10);
+    let stolen_money = Math.floor(Math.random() * 10 + 1);
+
+    if (stolen_money > enemy.money) {
+        stolen_money = enemy.money;
+    }
 
     enemy.money -= stolen_money;
     money += stolen_money;
     player_action = true;
+    coin_counter.textContent = money;
 
     combatlog(`You pickpocket ${enemy.name} and find ${stolen_money} coins.`, "enemyDamaged");
-}
+};
 
 function healer_heal() {
-    let to_heal = Math.floor(Math.random() * 15)
+    let to_heal = Math.floor(Math.random() * 15 + 1)
 
     player_hp += to_heal
     player_action = true
     player_hp_element.textContent = player_hp;
 
     combatlog(`You channel a divine spell and heal your wounds! +${to_heal} HP!`, "enemyDamaged")
-}
+};
+
+function change_class() {
+    disable_button(play_again_btn);
+    disable_button(change_class_btn);
+
+    if (player_class === "Warrior") {
+        enable_button(thief_button);
+        enable_button(healer_button);
+    }
+
+    else if (player_class === "Thief") {
+        enable_button(warrior_button);
+        enable_button(healer_button);
+    }
+
+    else if (player_class === "Healer") {
+        enable_button(warrior_button);
+        enable_button(thief_button);
+    }
+
+    picked_class.style.display = "none";
+    money -= 100;
+    coin_counter.textContent = money;
+    player_class = "";
+};
 
 next_round_btn.addEventListener("click", game_loop);
 stop_btn.addEventListener("click", stop);
@@ -326,3 +375,4 @@ play_again_btn.addEventListener("click", play_again);
 warrior_button.addEventListener("click", pick_class);
 thief_button.addEventListener("click", pick_class);
 healer_button.addEventListener("click", pick_class);
+change_class_btn.addEventListener("click", change_class);

@@ -92,3 +92,7 @@ button:active {
 #pickedClass {
     display: none;
 }
+
+#changeClass {
+    display: none;
+}
