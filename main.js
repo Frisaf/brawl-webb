@@ -119,7 +119,7 @@ function enemy_class_action() {
         combatlog(`${enemy.name} deals an additional ${action_int} damage to you.`, "playerDamaged");
     }
 
-    else if (enemy.game_class === "Thief" && money > 1) {
+    else if (enemy.game_class === "Thief" && money > action_int) {
         if (action_int > money) {
             action_int = money;
         };
