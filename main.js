@@ -60,6 +60,7 @@ const action_button = document.querySelector("#actionBtn");
 const coin_counter = document.querySelector("#coinCounter");
 const change_class_btn = document.querySelector("#changeClass");
 const picked_class = document.querySelector("#pickedClass");
+const multiplier_text = document.querySelector("#multiplier");
 
 const game_classes = ["Warrior", "Thief", "Healer"];
 
@@ -73,6 +74,7 @@ let money = 0;
 let round;
 let player_action = false;
 let enemy_action = false;
+let coin_multiplier = 1;
 
 disable_button(next_round_btn);
 disable_button(change_class_btn);
@@ -86,7 +88,7 @@ function spawn_enemy() {
     const hp = Math.floor(Math.random() * 50 + 30);
     const type = random_choice(enemy_types);
     const enemy_class = random_choice(game_classes);
-    const money = Math.floor(Math.random() * 10 + (hp / 10));
+    const money = Math.floor(Math.random() * 10 + (hp / 10) * coin_multiplier);
 
     return new Enemy(name, hp, type, enemy_class, money)
 }
@@ -237,6 +239,11 @@ function game_round() {
 
     if (winner == "Player") {
         player_hp_element.textContent = player_hp_element.textContent + crown;
+
+        if (coin_multiplier <= 7) {
+            coin_multiplier += 1;
+            multiplier_text.textContent = coin_multiplier;
+        }
     }
 
     else if (winner == "Enemy") {
