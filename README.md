@@ -4,7 +4,7 @@ The third one...
 ## Hur fungerar spelet?
 Spelet fungerar som sådant att man väljer en klass. Dessa har olika funktioner. Med warrior kan man göra mer skada varje runda, med thief kan man stjäla lite coins från fienden i förtid och med healer kan man hela sig själv. När man har valt en klass får man starta spelet, och under rundan kan man välja att använda sin class ability. Detta kan man bara göra en gång per runda. Även fienden har en klass och en ability, och reglerna är densamma för fienden.
 
-Om man vinner får man coins och man får tillbaka lite HP efter varje runda. Om man dör förlorar man inte sina coins, utan man får bara börja om.
+Om man vinner får man coins och man får tillbaka lite HP efter varje runda. Om man dör förlorar man inte sina coins, utan man får bara börja om. Ens multiplier återställs dock.
 
 ## Vad är jag mest nöjd med?
 Jag är mest nöjd med att jag fick klasserna att fungera, och att spelet är någorlunda balanserat.

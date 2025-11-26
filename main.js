@@ -284,6 +284,8 @@ function play_again() {
 
     player_action = false;
     enemy_action = false;
+
+    coin_multiplier = 1;
 };
 
 function pick_class() {
